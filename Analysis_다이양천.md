@@ -112,7 +112,7 @@ Actor는 User와 Admin이며, include 관계를 적용했습니다.
 
 |Summary|사용자는 개인 정보를 입력하여 계정을 등록하고 시스템 쇼핑 기능을 사용할 수 있습니다|
 
-|Scope|Always be Fresh|
+|Scope|Fruit Mall Website|
 
 |Level|User level|
 
@@ -188,7 +188,7 @@ Actor는 User와 Admin이며, include 관계를 적용했습니다.
 
 |Summary|가입한 사용자 및 관리자는 계정과 비밀번호로 로그인하여 해당 기능을 사용합니다|
 
-|Scope|Always be Fresh|
+|Scope|Fruit Mall Website|
 
 |Level|User level|
 
@@ -262,7 +262,7 @@ Actor는 User와 Admin이며, include 관계를 적용했습니다.
 
 |Summary|사용자가 상품 페이지에서 다양한 과일 상품을 조회합니다|
 
-|Scope|Always be Fresh|
+|Scope|Fruit Mall Website|
 
 |Level|User level|
 
@@ -330,7 +330,7 @@ Actor는 User와 Admin이며, include 관계를 적용했습니다.
 
 |Summary|사용자가 키워드로 목표 과일 상품을 검색합니다|
 
-|Scope|Always be Fresh|
+|Scope|Fruit Mall Website|
 
 |Level|User level|
 
@@ -402,7 +402,7 @@ Actor는 User와 Admin이며, include 관계를 적용했습니다.
 
 |Summary|사용자가 선호하는 상품을 장바구니에 추가하여 임시 저장합니다|
 
-|Scope|Always be Fresh|
+|Scope|Fruit Mall Website|
 
 |Level|User level|
 
@@ -470,7 +470,7 @@ Actor는 User와 Admin이며, include 관계를 적용했습니다.
 
 |Summary|사용자가 장바구니 상품을 결제하고 주문을 생성합니다|
 
-|Scope|Always be Fresh|
+|Scope|Fruit Mall Website|
 
 |Level|User level|
 
@@ -540,7 +540,7 @@ Actor는 User와 Admin이며, include 관계를 적용했습니다.
 
 |Summary|사용자가 생성된 주문에 대해 결제하여 거래를 완료합니다|
 
-|Scope|Always be Fresh|
+|Scope|Fruit Mall Website|
 
 |Level|User level|
 
@@ -610,7 +610,7 @@ Actor는 User와 Admin이며, include 관계를 적용했습니다.
 
 |Summary|사용자가 자신의 주문 상태 및 물류 정보를 조회합니다|
 
-|Scope|Always be Fresh|
+|Scope|Fruit Mall Website|
 
 |Level|User level|
 
