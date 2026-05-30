@@ -1,0 +1,338 @@
+# Design-and-development-of-the-fruit-mall-website
+
+**학번**: 22313782  
+**이름**: 다이양천（Dai Yangchen）  
+**이메일**: 3122883107@qq.com
+
+---
+
+## Revision History
+
+| Revision date | Version | Description                          | Author       |
+|---------------|---------|--------------------------------------|--------------|
+| 2026.05.11    | 0       | 과일 쇼핑몰 웹사이트 초기 설계 초안 | Dai Yangchen |
+
+---
+
+## Contents
+
+1. [Introduction](#1-introduction)
+2. [Class diagram](#2-class-diagram)
+3. [Sequence diagram](#3-sequence-diagram)
+4. [State machine diagram](#4-state-machine-diagram)
+5. [Implementation requirements](#5-implementation-requirements)
+6. [Glossary](#6-glossary)
+7. [References](#7-references)
+
+---
+
+## 1. Introduction
+
+본 문서는 **과일 쇼핑몰 웹사이트**의 상세 시스템 설계를 제시한다. 본 시스템은 전통적인 과일 판매 방식의 **정보 비대칭, 물류 비용 증가, 쇼핑 편의성 부족** 등의 문제를 해결하기 위해 개발되었으며, **3계층 아키텍처(프론트엔드 표현 계층, 백엔드 비즈니스 로직 계층, 데이터베이스 계층)**를 채택하고 있다.
+
+핵심 기능으로는 **과일 전시, 사용자 회원가입, 장바구니, 온라인 결제, 주문 추적, 관리자 백엔드 관리** 등이 통합되어 있다.
+
+### 설계 목표
+- 안정적이고 안전하며 사용자 친화적인 과일 거래 전자상거래 플랫폼 구축
+- 효율적인 상품 관리, 주문 처리, 사용자 운영 모듈 구현
+- 데이터 보안, 시스템 확장성, 기기 간 호환성 확보
+- 과일 공급망의 중간 유통 단계를 줄이고 운영 효율성 향상
+
+본 문서는 클래스 다이어그램, 시퀀스 다이어그램, 상태 기계 다이어그램, 운영 환경, 주요 용어 정의, 참고 문헌을 명시하며, 시스템 구현에 대한 완전한 설계 근거를 제공한다.
+
+---
+
+## 2. Class diagram
+
+### Core Class Diagram Overview
+시스템은 **User, Fruit, Category, Cart, Order, OrderItem, Admin** 7개의 핵심 클래스로 구성되며, 속성과 메서드가 명확하게 분리된다.
+
+### Detailed Class Description
+
+#### 1. User
+**Attributes**
+| Attribute  | Type    | Description          |
+|------------|---------|----------------------|
+| userId     | Integer | 사용자 고유 ID       |
+| username   | String  | 사용자 로그인 이름   |
+| password   | String  | 암호화된 로그인 비밀번호 |
+| phone      | String  | 연락 전화번호        |
+| email      | String  | 사용자 이메일 주소   |
+| address    | String  | 배송 주소            |
+| createTime | Date    | 계정 생성 시간        |
+
+**Methods**
+| Method       | Description          |
+|--------------|----------------------|
+| register()   | 사용자 회원가입 완료 |
+| login()      | 사용자 로그인 인증   |
+| updateInfo() | 개인 정보 수정       |
+| viewOrders() | 과거 주문 조회       |
+
+#### 2. Fruit
+**Attributes**
+| Attribute   | Type    | Description                |
+|-------------|---------|----------------------------|
+| fruitId     | Integer | 과일 고유 ID               |
+| name        | String  | 과일 이름                  |
+| price       | Double  | 단가                       |
+| categoryId  | Integer | 소속 카테고리 ID           |
+| image       | String  | 상품 이미지 경로           |
+| description | String  | 상품 설명 및 영양 정보     |
+| stock       | Integer | 재고 수량                  |
+
+**Methods**
+| Method         | Description          |
+|----------------|----------------------|
+| getDetails()   | 과일 상세 정보 조회 |
+| updateStock()  | 재고 수량 수정       |
+
+#### 3. Category
+**Attributes**
+| Attribute     | Type    | Description                        |
+|---------------|---------|------------------------------------|
+| categoryId    | Integer | 카테고리 고유 ID                   |
+| categoryName  | String  | 카테고리 이름 (예: 열대과일)      |
+
+**Methods**
+| Method        | Description                  |
+|---------------|------------------------------|
+| addFruit()    | 카테고리에 과일 추가         |
+| listFruits()  | 카테고리 내 모든 과일 조회   |
+
+#### 4. Cart
+**Attributes**
+| Attribute   | Type    | Description          |
+|-------------|---------|----------------------|
+| cartId      | Integer | 장바구니 고유 ID     |
+| userId      | Integer | 해당 사용자 ID        |
+| createTime  | Date    | 장바구니 생성 시간    |
+
+**Methods**
+| Method           | Description                  |
+|------------------|------------------------------|
+| addItem()        | 장바구니에 과일 추가         |
+| removeItem()     | 장바구니에서 과일 삭제       |
+| updateQuantity() | 구매 수량 조절               |
+| checkout()       | 장바구니에서 주문 생성       |
+
+#### 5. Order
+**Attributes**
+| Attribute   | Type    | Description                                  |
+|-------------|---------|----------------------------------------------|
+| orderId     | Integer | 주문 고유 ID                                 |
+| userId      | Integer | 구매자 사용자 ID                             |
+| totalPrice  | Double  | 주문 총 금액                                 |
+| status      | String  | 주문 상태 (대기/결제완료/발송/완료)        |
+| createTime  | Date    | 주문 생성 시간                                |
+| address     | String  | 배송 주소                                    |
+
+**Methods**
+| Method         | Description          |
+|----------------|----------------------|
+| createOrder()  | 새 주문 생성         |
+| cancelOrder()  | 미결제 주문 취소     |
+| updateStatus() | 주문 상태 변경        |
+
+#### 6. OrderItem
+**Attributes**
+| Attribute | Type    | Description                  |
+|-----------|---------|------------------------------|
+| itemId    | Integer | 주문 상세 고유 ID             |
+| orderId   | Integer | 해당 주문 ID                  |
+| fruitId   | Integer | 구매한 과일 ID                |
+| quantity  | Integer | 구매 수량                     |
+| price     | Double  | 구매 시 실제 단가             |
+
+**Methods**
+| Method              | Description          |
+|---------------------|----------------------|
+| calculateSubtotal() | 해당 상품 소계 계산   |
+
+#### 7. Admin
+**Attributes**
+| Attribute  | Type    | Description          |
+|------------|---------|----------------------|
+| adminId    | Integer | 관리자 고유 ID       |
+| adminName  | String  | 관리자 로그인 이름   |
+| password   | String  | 암호화된 관리자 비밀번호 |
+
+**Methods**
+| Method         | Description                          |
+|----------------|--------------------------------------|
+| login()        | 관리자 로그인 인증                   |
+| manageFruit()  | 과일 상품 추가/수정/삭제             |
+| manageOrder()  | 주문 처리 및 상태 변경                |
+| manageUser()   | 사용자 계정 조회 및 관리              |
+
+---
+
+## 3. Sequence diagram
+
+### 3.1 사용자 회원가입 및 로그인 시퀀스
+1. 사용자 → 웹사이트: 아이디, 비밀번호, 전화번호, 이메일 입력
+2. 웹사이트 → UserService: 회원가입 데이터 전송
+3. UserService → 데이터베이스: 아이디 중복 확인
+4. 데이터베이스 → UserService: 확인 결과 반환
+5. UserService → 데이터베이스: 새 사용자 데이터 삽입
+6. 데이터베이스 → UserService: 회원가입 성공 반환
+7. UserService → 웹사이트: 성공 메시지 전달
+8. 웹사이트 → 사용자: 로그인 페이지 이동
+9. 사용자 → 웹사이트: 아이디, 비밀번호 입력
+10. 웹사이트 → UserService: 로그인 검증 요청
+11. UserService → 데이터베이스: 사용자 비밀번호 조회
+12. 데이터베이스 → UserService: 암호화된 비밀번호 반환
+13. UserService → 웹사이트: 검증 결과 반환
+14. 웹사이트 → 사용자: 메인 페이지 표시 (로그인 성공)
+
+### 3.2 과일 조회 및 장바구니 추가 시퀀스
+1. 사용자 → 웹사이트: 과일 목록 페이지 접속
+2. 웹사이트 → CategoryService: 카테고리 데이터 요청
+3. CategoryService → 데이터베이스: 모든 카테고리 조회
+4. 데이터베이스 → CategoryService: 카테고리 목록 반환
+5. CategoryService → 웹사이트: 카테고리 네비게이션 렌더링
+6. 사용자 → 웹사이트: 카테고리 선택/과일 검색
+7. 웹사이트 → FruitService: 필터링된 과일 데이터 요청
+8. FruitService → 데이터베이스: 카테고리/키워드별 과일 조회
+9. 데이터베이스 → FruitService: 과일 상세 정보 반환
+10. FruitService → 웹사이트: 과일 목록 표시
+11. 사용자 → 웹사이트: 장바구니 추가 클릭
+12. 웹사이트 → CartService: userId, fruitId, 수량 전송
+13. CartService → 데이터베이스: 장바구니 항목 삽입/수정
+14. 데이터베이스 → CartService: 처리 결과 반환
+15. CartService → 웹사이트: 추가 성공 메시지 전달
+16. 웹사이트 → 사용자: 장바구니 아이콘 수량 갱신
+
+### 3.3 장바구니 제출 및 결제 완료 시퀀스
+1. 사용자 → 웹사이트: 장바구니 페이지 열기
+2. 웹사이트 → CartService: userId별 장바구니 데이터 요청
+3. CartService → 데이터베이스: 사용자 장바구니 항목 조회
+4. 데이터베이스 → CartService: 장바구니 상세 반환
+5. CartService → 웹사이트: 장바구니 표시 및 총액 계산
+6. 사용자 → 웹사이트: 장바구니 확인 및 주문 제출
+7. 웹사이트 → OrderService: userId, cartId, 배송 주소 전송
+8. OrderService → 데이터베이스: 새 Order 레코드 생성
+9. 데이터베이스 → OrderService: 생성된 orderId 반환
+10. OrderService → 데이터베이스: OrderItem 레코드 생성
+11. 데이터베이스 → OrderService: 주문 생성 성공 반환
+12. OrderService → PaymentSystem: 결제 요청 시작
+13. PaymentSystem → 사용자: 결제 페이지 이동
+14. 사용자 → PaymentSystem: 온라인 결제 완료
+15. PaymentSystem → OrderService: 결제 성공 알림
+16. OrderService → 데이터베이스: 주문 상태 '결제완료'로 변경
+17. OrderService → 웹사이트: 결제 성공 및 주문 상세 표시
+18. 웹사이트 → 사용자: 주문 확인 페이지 표시
+
+### 3.4 관리자 과일 상품 관리 시퀀스
+1. 관리자 → 웹사이트: 관리자 아이디, 비밀번호 입력
+2. 웹사이트 → AdminService: 로그인 검증 요청
+3. AdminService → 데이터베이스: 관리자 정보 조회
+4. 데이터베이스 → AdminService: 관리자 데이터 반환
+5. AdminService → 웹사이트: 검증 성공 반환
+6. 웹사이트 → 관리자: 관리자 백엔드 이동
+7. 관리자 → 웹사이트: 과일 관리 페이지 접속
+8. 웹사이트 → FruitService: 모든 과일 데이터 요청
+9. FruitService → 데이터베이스: 모든 과일 조회
+10. 데이터베이스 → FruitService: 과일 목록 반환
+11. FruitService → 웹사이트: 과일 관리 인터페이스 표시
+12. 관리자 → 웹사이트: 과일 추가/수정/삭제 클릭
+13. 웹사이트 → FruitService: 작업 데이터 전송
+14. FruitService → 데이터베이스: 추가/수정/삭제 실행
+15. 데이터베이스 → FruitService: 처리 결과 반환
+16. FruitService → 웹사이트: 성공 메시지 및 목록 갱신
+17. 웹사이트 → 관리자: 업데이트된 과일 데이터 표시
+
+---
+
+## 4. State machine diagram
+
+### 4.1 클라이언트(사용자) 상태 기계
+- **초기 상태**: 로그인하지 않음
+- **상태 1**: 로그인 완료
+- **상태 2**: 과일 조회 중
+- **상태 3**: 장바구니 편집 중
+- **상태 4**: 주문 생성 (미결제)
+- **상태 5**: 결제 완료
+- **상태 6**: 발송 완료
+- **상태 7**: 거래 완료
+- **최종 상태**: 로그아웃
+
+**상태 전환**
+- 로그인하지 않음 → 로그인 완료: 사용자 회원가입/로그인 완료
+- 로그인 완료 → 과일 조회 중: 사용자 과일 목록 접속
+- 과일 조회 중 → 장바구니 편집 중: 사용자 장바구니에 과일 추가
+- 장바구니 편집 중 → 주문 생성: 사용자 장바구니 제출
+- 주문 생성 → 결제 완료: 사용자 온라인 결제 완료
+- 결제 완료 → 발송 완료: 관리자 주문 발송 확인
+- 발송 완료 → 거래 완료: 사용자 상품 수령 확인
+- 모든 상태 → 로그아웃: 사용자 로그아웃 클릭
+
+### 4.2 서버 시스템 상태 기계
+- **초기 상태**: 대기 중
+- **상태 1**: 클라이언트 요청 수신
+- **상태 2**: 요청 유효성 검증
+- **상태 3**: 비즈니스 로직 처리
+- **상태 4**: 데이터베이스 접근
+- **상태 5**: 응답 데이터 생성
+- **상태 6**: 응답 전송
+- **최종 상태**: 대기 중으로 복귀
+
+**상태 전환**
+- 대기 중 → 클라이언트 요청 수신: 서버 사용자/관리자 HTTP 요청 수신
+- 클라이언트 요청 수신 → 요청 유효성 검증: 서버 요청 형식 및 사용자 인증 확인
+- 요청 유효성 검증 → 비즈니스 로직 처리: 요청 유효, 핵심 로직 처리 시작
+- 비즈니스 로직 처리 → 데이터베이스 접근: 데이터 조회/추가/수정 필요
+- 데이터베이스 접근 → 응답 데이터 생성: 데이터베이스 작업 완료, 결과 데이터 정리
+- 응답 데이터 생성 → 응답 전송: 응답 데이터 인코딩 및 클라이언트 전송
+- 응답 전송 → 대기 중: 응답 완료, 다음 요청 대기
+
+---
+
+## 5. Implementation requirements
+
+### 5.1 하드웨어 환경
+- CPU: Intel Core i5-10400 또는 동급 (4코어/6스레드 이상)
+- RAM: 8GB DDR4 (최소), 16GB 권장
+- 하드디스크: 50GB 이상 여유 공간 (SSD 권장)
+- 네트워크: 안정적인 초고속 인터넷 (10Mbps 이상), HTTP/HTTPS 지원
+
+### 5.2 소프트웨어 환경
+- 운영체제: Windows 10/Windows 11 (64비트)
+- 서버 컨테이너: Apache Tomcat 9.0
+- 데이터베이스 관리 시스템: MySQL 8.0 (InnoDB 엔진)
+- 백엔드 개발: Java 11, Spring Boot 2.7.x, IntelliJ IDEA 2023
+- 프론트엔드 개발: HTML5, CSS3, JavaScript (ES6+), Vue.js 3
+- 브라우저 호환성: Chrome 90+, Edge 90+, Firefox 88+
+- 개발 도구: Maven 3.8+, Git 2.30+, Postman (API 테스트)
+
+### 5.3 비기능 요구사항
+- 응답 시간: 페이지 로드 ≤ 2초, API 응답 ≤ 500ms
+- 동시 접속: 100명 이상 동시 사용자 지원
+- 보안: 사용자 비밀번호 암호화(BCrypt), HTTPS 전송, SQL 인젝션 방지
+- 안정성: 시스템 가동률 ≥ 99.5%, 정기 데이터 백업 지원
+
+---
+
+## 6. Glossary
+- **과일 쇼핑몰 웹사이트**: 신선한 과일의 온라인 전시, 판매, 배송을 위해 설계된 전자상거래 플랫폼으로, 사용자 쇼핑과 판매자 관리 기능을 통합한다.
+- **사용자**: 플랫폼에서 과일을 조회하고 장바구니에 추가하며 주문 및 결제하는 등록된 고객이다.
+- **관리자**: 과일 상품 관리, 주문 처리, 사용자 계정 유지, 시스템 운영 모니터링을 담당하는 시스템 관리자이다.
+- **카테고리**: 과일을 분류하는 기준(예: 열대과일, 핵과류, 베리류)으로, 사용자의 상품 탐색을 돕는다.
+- **장바구니**: 사용자가 주문 제출 전 선택한 과일을 기록하는 임시 데이터 저장 모듈로, 수량 조절 및 항목 삭제를 지원한다.
+- **주문**: 사용자가 장바구니를 제출한 후 생성되는 정식 거래 기록으로, 구매 상품, 총액, 배송 주소, 상태 정보를 포함한다.
+- **주문상세**: 주문 내 단일 과일 상품의 상세 기록으로, 과일 ID, 구매 수량, 실제 거래 가격을 포함한다.
+- **3계층 아키텍처**: 플랫폼을 프론트엔드 표현 계층, 백엔드 비즈니스 로직 계층, 데이터베이스 계층으로 나눈 시스템 아키텍처로, 관심사 분리와 유지보수 용이성을 제공한다.
+- **Spring Boot**: 경량 Java 백엔드 프레임워크로, 기업급 애플리케이션의 개발 및 배포를 간소화한다.
+- **MySQL**: 오픈소스 관계형 데이터베이스 관리 시스템으로, 모든 시스템 데이터(사용자 정보, 과일 데이터, 주문 데이터 등)를 저장하고 관리한다.
+- **Vue.js**: 사용자 인터페이스를 구축하기 위한 점진적 JavaScript 프레임워크로, 웹사이트의 반응형 및 인터랙티브 프론트엔드 페이지를 개발하는 데 사용된다.
+
+---
+
+## 7. References
+1. Pressman, R. S. *Software Engineering: A Practitioner’s Approach* (9th Edition). McGraw-Hill, 2021.
+2. Oracle Corporation. *Java 11 Official Documentation*, 2024.
+3. Spring Boot Official Team. *Spring Boot 2.7.x Reference Guide*, 2024.
+4. Oracle Corporation. *MySQL 8.0 Reference Manual*, 2024.
+5. Evan You. *Vue.js 3 Official Guide*, 2023.
+6. Sommerville, I. *Software Engineering* (10th Edition). Pearson, 2022.
+7. Apache Software Foundation. *Apache Tomcat 9.0 User Guide*, 2024.
